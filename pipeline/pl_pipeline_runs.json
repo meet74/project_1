@@ -1,0 +1,72 @@
+{
+	"name": "pl_pipeline_runs",
+	"properties": {
+		"activities": [
+			{
+				"name": "exec_pl_fetch_data",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "pl_fetch_data",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "exec_pl_clean_data",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "exec_pl_fetch_data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "pl_data_cleaning",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "exec_pl_transform_data",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "exec_pl_clean_data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "pl_data_transformation",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-05-31T23:45:35Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

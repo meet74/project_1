@@ -1,0 +1,23 @@
+{
+	"name": "ds_http_input",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_http_input",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "v0/b/music-player-98871.appspot.com/o/heart_2022_with_nans.csv?alt=media&token=77f59255-5d75-46b3-80b1-635a45b7503b"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

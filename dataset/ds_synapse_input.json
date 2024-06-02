@@ -1,0 +1,182 @@
+{
+	"name": "ds_synapse_input",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls_output",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "processed/cancer",
+				"fileSystem": "health-project"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "patient_state",
+				"type": "UTF8"
+			},
+			{
+				"name": "patient_gender",
+				"type": "UTF8"
+			},
+			{
+				"name": "general_health",
+				"type": "UTF8"
+			},
+			{
+				"name": "physical_health_days",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "mental_health_days",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "last_checkup_time",
+				"type": "UTF8"
+			},
+			{
+				"name": "physical_activities",
+				"type": "UTF8"
+			},
+			{
+				"name": "sleep_hours",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "had_heart_attack",
+				"type": "UTF8"
+			},
+			{
+				"name": "had_angina",
+				"type": "UTF8"
+			},
+			{
+				"name": "had_stroke",
+				"type": "UTF8"
+			},
+			{
+				"name": "had_asthma",
+				"type": "UTF8"
+			},
+			{
+				"name": "had_skin_cancer",
+				"type": "UTF8"
+			},
+			{
+				"name": "had_copd",
+				"type": "UTF8"
+			},
+			{
+				"name": "had_depressive_disorder",
+				"type": "UTF8"
+			},
+			{
+				"name": "had_kidney_disease",
+				"type": "UTF8"
+			},
+			{
+				"name": "had_arthritis",
+				"type": "UTF8"
+			},
+			{
+				"name": "had_diabetes",
+				"type": "UTF8"
+			},
+			{
+				"name": "deaf_or_hard_of_hearing",
+				"type": "UTF8"
+			},
+			{
+				"name": "blind_or_vision_difficulty",
+				"type": "UTF8"
+			},
+			{
+				"name": "difficulty_concentrating",
+				"type": "UTF8"
+			},
+			{
+				"name": "difficulty_walking",
+				"type": "UTF8"
+			},
+			{
+				"name": "difficulty_dressing_bathing",
+				"type": "UTF8"
+			},
+			{
+				"name": "difficulty_errands",
+				"type": "UTF8"
+			},
+			{
+				"name": "smoker_status",
+				"type": "UTF8"
+			},
+			{
+				"name": "ecigarette_usage",
+				"type": "UTF8"
+			},
+			{
+				"name": "chest_scan",
+				"type": "UTF8"
+			},
+			{
+				"name": "race_ethnicity_category",
+				"type": "UTF8"
+			},
+			{
+				"name": "age_category",
+				"type": "UTF8"
+			},
+			{
+				"name": "height_in_meters",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "weight_in_kilograms",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "bmi",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "alcohol_drinkers",
+				"type": "UTF8"
+			},
+			{
+				"name": "hiv_testing",
+				"type": "UTF8"
+			},
+			{
+				"name": "flu_vax_last_12",
+				"type": "UTF8"
+			},
+			{
+				"name": "pneumo_vax_ever",
+				"type": "UTF8"
+			},
+			{
+				"name": "tetanus_last_10_tdap",
+				"type": "UTF8"
+			},
+			{
+				"name": "high_risk_last_year",
+				"type": "UTF8"
+			},
+			{
+				"name": "covid_pos",
+				"type": "UTF8"
+			},
+			{
+				"name": "ingested_data",
+				"type": "INT96"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

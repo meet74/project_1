@@ -1,0 +1,180 @@
+{
+	"name": "ds_synapse_output",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_synapse",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "patient_state",
+				"type": "nvarchar"
+			},
+			{
+				"name": "patient_sex",
+				"type": "nvarchar"
+			},
+			{
+				"name": "general_health",
+				"type": "nvarchar"
+			},
+			{
+				"name": "physical_health_days",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "mental_health_days",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "last_checkup_time",
+				"type": "nvarchar"
+			},
+			{
+				"name": "physical_activities",
+				"type": "nvarchar"
+			},
+			{
+				"name": "sleep_hours",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "had_heart_attack",
+				"type": "nvarchar"
+			},
+			{
+				"name": "had_angina",
+				"type": "nvarchar"
+			},
+			{
+				"name": "had_stroke",
+				"type": "nvarchar"
+			},
+			{
+				"name": "had_asthma",
+				"type": "nvarchar"
+			},
+			{
+				"name": "had_skin_cancer",
+				"type": "nvarchar"
+			},
+			{
+				"name": "had_copd",
+				"type": "nvarchar"
+			},
+			{
+				"name": "had_depressive_disorder",
+				"type": "nvarchar"
+			},
+			{
+				"name": "had_kidney_disease",
+				"type": "nvarchar"
+			},
+			{
+				"name": "had_arthritis",
+				"type": "nvarchar"
+			},
+			{
+				"name": "had_diabetes",
+				"type": "nvarchar"
+			},
+			{
+				"name": "deaf_or_hard_of_hearing",
+				"type": "nvarchar"
+			},
+			{
+				"name": "blind_or_vision_difficulty",
+				"type": "nvarchar"
+			},
+			{
+				"name": "difficulty_concentrating",
+				"type": "nvarchar"
+			},
+			{
+				"name": "difficulty_walking",
+				"type": "nvarchar"
+			},
+			{
+				"name": "difficulty_dressing_bathing",
+				"type": "nvarchar"
+			},
+			{
+				"name": "difficulty_errands",
+				"type": "nvarchar"
+			},
+			{
+				"name": "smoker_status",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ecigarette_usage",
+				"type": "nvarchar"
+			},
+			{
+				"name": "chest_scan",
+				"type": "nvarchar"
+			},
+			{
+				"name": "race_ethnicity_category",
+				"type": "nvarchar"
+			},
+			{
+				"name": "age_category",
+				"type": "nvarchar"
+			},
+			{
+				"name": "height_in_meters",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "weight_in_kilograms",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "bmi",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "alcohol_drinkers",
+				"type": "nvarchar"
+			},
+			{
+				"name": "hiv_testing",
+				"type": "nvarchar"
+			},
+			{
+				"name": "flu_vax_last_12",
+				"type": "nvarchar"
+			},
+			{
+				"name": "pneumo_vax_ever",
+				"type": "nvarchar"
+			},
+			{
+				"name": "tetanus_last_10_tdap",
+				"type": "nvarchar"
+			},
+			{
+				"name": "high_risk_last_year",
+				"type": "nvarchar"
+			},
+			{
+				"name": "covid_pos",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "heart_disease_data_internal"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

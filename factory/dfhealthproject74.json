@@ -1,0 +1,9 @@
+{
+	"name": "dfhealthproject74",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "aef42630-752d-49e1-8630-79440b168e72",
+		"tenantId": "01d0a7d7-12e7-422a-9a39-9c406c7e4496"
+	}
+}

@@ -1,0 +1,30 @@
+{
+	"name": "pl_data_transformation",
+	"properties": {
+		"activities": [
+			{
+				"name": "data_transforamtion_noteboojk",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/shriji74@outlook.com/health-project/transform_processed_data"
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-05-31T23:38:13Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
