@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 2",
+	"properties": {
+		"content": {
+			"query": "-- Create the internal table \nCREATE TABLE dbo.heart_disease_data_internal (\n    patient_state NVARCHAR(100),\n    patient_gender NVARCHAR(100),\n    general_health NVARCHAR(100),\n    physical_health_days INT,\n    mental_health_days INT,\n    last_checkup_time NVARCHAR(100),\n    physical_activities NVARCHAR(100),\n    sleep_hours FLOAT,\n    had_heart_attack NVARCHAR(100),\n    had_angina NVARCHAR(100),\n    had_stroke NVARCHAR(100),\n    had_asthma NVARCHAR(100),\n    had_skin_cancer NVARCHAR(100),\n    had_copd NVARCHAR(100),\n    had_depressive_disorder NVARCHAR(100),\n    had_kidney_disease NVARCHAR(100),\n    had_arthritis NVARCHAR(100),\n    had_diabetes NVARCHAR(100),\n    deaf_or_hard_of_hearing NVARCHAR(100),\n    blind_or_vision_difficulty NVARCHAR(100),\n    difficulty_concentrating NVARCHAR(100),\n    difficulty_walking NVARCHAR(100),\n    difficulty_dressing_bathing NVARCHAR(100),\n    difficulty_errands NVARCHAR(100),\n    smoker_status NVARCHAR(100),\n    ecigarette_usage NVARCHAR(100),\n    chest_scan NVARCHAR(100),\n    race_ethnicity_category NVARCHAR(100),\n    age_category NVARCHAR(100),\n    height_in_meters FLOAT,\n    weight_in_kilograms FLOAT,\n    bmi FLOAT,\n    alcohol_drinkers NVARCHAR(100),\n    hiv_testing NVARCHAR(100),\n    flu_vax_last_12 NVARCHAR(100),\n    pneumo_vax_ever NVARCHAR(100),\n    tetanus_last_10_tdap NVARCHAR(100),\n    high_risk_last_year NVARCHAR(100),\n    covid_pos NVARCHAR(100),\n    ingested_data NVARCHAR(100)\n)\nWITH (\n    DISTRIBUTION = HASH(patient_state) \n);\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "shriji",
+				"poolName": "shriji"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

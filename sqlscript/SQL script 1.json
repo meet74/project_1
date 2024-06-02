@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "-- Create Table with ROUND_ROBIN Distribution\nCREATE TABLE Average_BMI\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT patient_state, CEILING(AVG(bmi)) AS average_bmi \nFROM dbo.heart_disease_data_internal\nGROUP BY patient_state;\n\n\n\n\n\n--Count of Heart Attack Cases by Age Category\nCREATE TABLE Heart_Attack_Count\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT age_category,COUNT(CASE WHEN had_heart_attack = 'Yes' THEN 1 END) AS heart_attack_count FROM dbo.heart_disease_data_internal\nGROUP BY age_category\n\n\n-- Distribution of Health Conditions by State\nCREATE TABLE Health_Condition_State\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT patient_state,\nCOUNT(CASE WHEN had_heart_attack = 'Yes' THEN 1 END) AS heart_attack_count,\nCOUNT(CASE WHEN had_stroke = 'Yes' THEN 1 END) AS stroke_count,\nCOUNT(CASE WHEN had_diabetes = 'Yes' THEN 1 END) AS diabetes_count\nFROM dbo.heart_disease_data_internal\nGROUP BY patient_state\n\n\n\n-- Correlation Between Sleep Hours and BMI\nCREATE TABLE Sleep_Hours_BMI\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT sleep_hours, CEILING(AVG(bmi)) AS avg_bmi\nFROM dbo.heart_disease_data_internal\nGROUP BY sleep_hours\n\n\n\n--Impact of Physical Activities on Heart Attack Cases\nCREATE TABLE PhysicalActivites_Heart_Attack\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT physical_activities, COUNT(*) AS total_cases,\n       COUNT(CASE WHEN had_heart_attack = 'Yes' THEN 1 END) AS heart_attack_cases\nFROM dbo.heart_disease_data_internal\nGROUP BY physical_activities\n\n\n\n\n\n--Frequency of Smoking Status by Gender\nCREATE TABLE Smoke_Status\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT patient_gender, smoker_status, COUNT(*) AS frequency\nFROM dbo.heart_disease_data_internal\nGROUP BY patient_gender, smoker_status\n\n\n\n--Count of Different Health Conditions by Age Category\nCREATE TABLE Health_Condition_Age_Category\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT age_category,\n       COUNT(CASE WHEN had_asthma = 'Yes' THEN 1 END) AS asthma_count,\n       COUNT(CASE WHEN had_skin_cancer = 'Yes' THEN 1 END) AS skin_cancer_count,\n       COUNT(CASE WHEN had_copd = 'Yes' THEN 1 END) AS copd_count,\n       COUNT(CASE WHEN had_depressive_disorder = 'Yes' THEN 1 END) AS depressive_disorder_count,\n       COUNT(CASE WHEN had_kidney_disease = 'Yes' THEN 1 END) AS kidney_disease_count\nFROM dbo.heart_disease_data_internal\nGROUP BY age_category\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "shriji",
+				"poolName": "shriji"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
