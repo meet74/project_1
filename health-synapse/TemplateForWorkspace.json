@@ -1,0 +1,149 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"type": "string",
+			"metadata": "Workspace name",
+			"defaultValue": "health-synapse"
+		},
+		"health-synapse-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'health-synapse-WorkspaceDefaultSqlServer'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:health-synapse.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"health-synapse-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://healthstorageaccount.dfs.core.windows.net"
+		}
+	},
+	"variables": {
+		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/health-synapse-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('health-synapse-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/health-synapse-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('health-synapse-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
+			"type": "Microsoft.Synapse/workspaces/credentials",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/shriji')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- Create Table with ROUND_ROBIN Distribution\nCREATE TABLE Average_BMI\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT patient_state, CEILING(AVG(bmi)) AS average_bmi \nFROM dbo.heart_disease_data_internal\nGROUP BY patient_state;\n\n\n\n\n\n--Count of Heart Attack Cases by Age Category\nCREATE TABLE Heart_Attack_Count\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT age_category,COUNT(CASE WHEN had_heart_attack = 'Yes' THEN 1 END) AS heart_attack_count FROM dbo.heart_disease_data_internal\nGROUP BY age_category\n\n\n-- Distribution of Health Conditions by State\nCREATE TABLE Health_Condition_State\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT patient_state,\nCOUNT(CASE WHEN had_heart_attack = 'Yes' THEN 1 END) AS heart_attack_count,\nCOUNT(CASE WHEN had_stroke = 'Yes' THEN 1 END) AS stroke_count,\nCOUNT(CASE WHEN had_diabetes = 'Yes' THEN 1 END) AS diabetes_count\nFROM dbo.heart_disease_data_internal\nGROUP BY patient_state\n\n\n\n-- Correlation Between Sleep Hours and BMI\nCREATE TABLE Sleep_Hours_BMI\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT sleep_hours, CEILING(AVG(bmi)) AS avg_bmi\nFROM dbo.heart_disease_data_internal\nGROUP BY sleep_hours\n\n\n\n--Impact of Physical Activities on Heart Attack Cases\nCREATE TABLE PhysicalActivites_Heart_Attack\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT physical_activities, COUNT(*) AS total_cases,\n       COUNT(CASE WHEN had_heart_attack = 'Yes' THEN 1 END) AS heart_attack_cases\nFROM dbo.heart_disease_data_internal\nGROUP BY physical_activities\n\n\n\n\n\n--Frequency of Smoking Status by Gender\nCREATE TABLE Smoke_Status\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT patient_gender, smoker_status, COUNT(*) AS frequency\nFROM dbo.heart_disease_data_internal\nGROUP BY patient_gender, smoker_status\n\n\n\n--Count of Different Health Conditions by Age Category\nCREATE TABLE Health_Condition_Age_Category\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT age_category,\n       COUNT(CASE WHEN had_asthma = 'Yes' THEN 1 END) AS asthma_count,\n       COUNT(CASE WHEN had_skin_cancer = 'Yes' THEN 1 END) AS skin_cancer_count,\n       COUNT(CASE WHEN had_copd = 'Yes' THEN 1 END) AS copd_count,\n       COUNT(CASE WHEN had_depressive_disorder = 'Yes' THEN 1 END) AS depressive_disorder_count,\n       COUNT(CASE WHEN had_kidney_disease = 'Yes' THEN 1 END) AS kidney_disease_count\nFROM dbo.heart_disease_data_internal\nGROUP BY age_category\n\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "shriji",
+						"poolName": "shriji"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 2')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- Create the internal table \nCREATE TABLE dbo.heart_disease_data_internal (\n    patient_state NVARCHAR(100),\n    patient_gender NVARCHAR(100),\n    general_health NVARCHAR(100),\n    physical_health_days INT,\n    mental_health_days INT,\n    last_checkup_time NVARCHAR(100),\n    physical_activities NVARCHAR(100),\n    sleep_hours FLOAT,\n    had_heart_attack NVARCHAR(100),\n    had_angina NVARCHAR(100),\n    had_stroke NVARCHAR(100),\n    had_asthma NVARCHAR(100),\n    had_skin_cancer NVARCHAR(100),\n    had_copd NVARCHAR(100),\n    had_depressive_disorder NVARCHAR(100),\n    had_kidney_disease NVARCHAR(100),\n    had_arthritis NVARCHAR(100),\n    had_diabetes NVARCHAR(100),\n    deaf_or_hard_of_hearing NVARCHAR(100),\n    blind_or_vision_difficulty NVARCHAR(100),\n    difficulty_concentrating NVARCHAR(100),\n    difficulty_walking NVARCHAR(100),\n    difficulty_dressing_bathing NVARCHAR(100),\n    difficulty_errands NVARCHAR(100),\n    smoker_status NVARCHAR(100),\n    ecigarette_usage NVARCHAR(100),\n    chest_scan NVARCHAR(100),\n    race_ethnicity_category NVARCHAR(100),\n    age_category NVARCHAR(100),\n    height_in_meters FLOAT,\n    weight_in_kilograms FLOAT,\n    bmi FLOAT,\n    alcohol_drinkers NVARCHAR(100),\n    hiv_testing NVARCHAR(100),\n    flu_vax_last_12 NVARCHAR(100),\n    pneumo_vax_ever NVARCHAR(100),\n    tetanus_last_10_tdap NVARCHAR(100),\n    high_risk_last_year NVARCHAR(100),\n    covid_pos NVARCHAR(100),\n    ingested_data NVARCHAR(100)\n)\nWITH (\n    DISTRIBUTION = HASH(patient_state) \n);\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "shriji",
+						"poolName": "shriji"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		}
+	]
+}
