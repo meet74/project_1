@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 4",
+	"properties": {
+		"content": {
+			"query": "-- Total sales by country\nCREATE TABLE Total_sales_country\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT country, SUM(total_price) AS total_sales\nFROM cleaned_retail_data\nGROUP BY country\n\n\n\n-- Average unit price by stock code\nCREATE TABLE Average_Price_Stock\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT stock_code, ROUND(AVG(unit_price), 2) AS avg_unit_price\nFROM cleaned_retail_data\nGROUP BY stock_code\n\n\n\n-- Monthly sales trends\nCREATE TABLE Monthly_Sales\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT invoice_year, invoice_month, SUM(total_price) AS total_sales\nFROM cleaned_retail_data\nGROUP BY invoice_year, invoice_month\n\n\n\n-- Customer purchase patterns\nCREATE TABLE Purchase_Patterns\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT customer_id, COUNT(*) AS number_of_purchases, SUM(total_price) AS total_spent\nFROM cleaned_retail_data\nGROUP BY customer_id\n\n\n\n-- Transactions with high quantities\nCREATE TABLE Transactions_with_quantities\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT invoice_no, stock_code, quantity, total_price\nFROM cleaned_retail_data\nWHERE quantity > 100\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "shriji",
+				"poolName": "shriji"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

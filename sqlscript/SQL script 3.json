@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 3",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE cleaned_retail_data (\n    invoice_no NVARCHAR(100),\n    stock_code NVARCHAR(100),\n    description NVARCHAR(255),\n    quantity INT,\n    invoice_date DATETIME,\n    unit_price FLOAT,\n    customer_id INT,\n    country NVARCHAR(100),\n    total_price FLOAT,\n    transaction_id NVARCHAR(100),\n    invoice_year INT,\n    invoice_month INT,\n    invoice_dayof_week NVARCHAR(100)\n)\nWITH(\n    DISTRIBUTION = ROUND_ROBIN\n);\n\n\n\nSELECT * FROM cleaned_retail_data",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "shriji",
+				"poolName": "shriji"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
