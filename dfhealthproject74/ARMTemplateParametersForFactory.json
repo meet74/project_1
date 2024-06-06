@@ -1,0 +1,45 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "dfhealthproject74"
+		},
+		"AzureDatabricks1_accessToken": {
+			"value": ""
+		},
+		"health-synapse-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:health-synapse.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"ls_adls_output_accountKey": {
+			"value": ""
+		},
+		"ls_synapse_password": {
+			"value": ""
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"value": "0531-164857-vo8whvkx"
+		},
+		"AzureKeyVault_properties_typeProperties_baseUrl": {
+			"value": "https://health-key-vault.vault.azure.net/"
+		},
+		"health-synapse-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://healthstorageaccount.dfs.core.windows.net"
+		},
+		"ls_adls_output_properties_typeProperties_url": {
+			"value": "https://healthstorageaccount.dfs.core.windows.net/"
+		},
+		"ls_http_input_properties_typeProperties_url": {
+			"value": "https://firebasestorage.googleapis.com"
+		},
+		"ls_synapse_properties_typeProperties_server": {
+			"value": "health-synapse.sql.azuresynapse.net"
+		},
+		"ls_synapse_properties_typeProperties_database": {
+			"value": "shriji"
+		},
+		"ls_synapse_properties_typeProperties_userName": {
+			"value": "shriji"
+		}
+	}
+}

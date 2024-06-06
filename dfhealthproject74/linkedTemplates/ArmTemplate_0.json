@@ -1,0 +1,1039 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dfhealthproject74"
+		},
+		"AzureDatabricks1_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks1'"
+		},
+		"ls_adls_output_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_adls_output'"
+		},
+		"ls_synapse_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_synapse'"
+		},
+		"health-synapse-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'health-synapse-WorkspaceDefaultSqlServer'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:health-synapse.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0531-164857-vo8whvkx"
+		},
+		"AzureKeyVault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://health-key-vault.vault.azure.net/"
+		},
+		"ls_adls_output_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://healthstorageaccount.dfs.core.windows.net/"
+		},
+		"ls_http_input_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://firebasestorage.googleapis.com"
+		},
+		"ls_synapse_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "health-synapse.sql.azuresynapse.net"
+		},
+		"ls_synapse_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "shriji"
+		},
+		"ls_synapse_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "shriji"
+		},
+		"health-synapse-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://healthstorageaccount.dfs.core.windows.net"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricks1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-1379301261271386.6.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDatabricks1_accessToken')]"
+					},
+					"existingClusterId": "[parameters('AzureDatabricks1_properties_typeProperties_existingClusterId')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_adls_output')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ls_adls_output_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('ls_adls_output_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_http_input')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('ls_http_input_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": false,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_synapse')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"server": "[parameters('ls_synapse_properties_typeProperties_server')]",
+					"database": "[parameters('ls_synapse_properties_typeProperties_database')]",
+					"encrypt": "optional",
+					"trustServerCertificate": true,
+					"authenticationType": "SQL",
+					"userName": "[parameters('ls_synapse_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_synapse_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/WorkspaceSystemIdentity')]",
+			"type": "Microsoft.DataFactory/factories/credentials",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_data_cleaning')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "data_cleaning_notebook",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/shriji74@outlook.com/health-project/ingest_cancer_data"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-05-31T22:42:33Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_data_transformation')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "data_transforamtion_noteboojk",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/shriji74@outlook.com/health-project/transform_processed_data"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-05-31T23:38:13Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_http_input')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_http_input",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "v0/b/music-player-98871.appspot.com/o/heart_2022_with_nans.csv?alt=media&token=77f59255-5d75-46b3-80b1-635a45b7503b"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_http_input')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_storage_output')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adls_output",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "cancer_data.csv",
+						"folderPath": "raw",
+						"fileSystem": "health-project"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_adls_output')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_synapse_input')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adls_output",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "processed/cancer",
+						"fileSystem": "health-project"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "patient_state",
+						"type": "UTF8"
+					},
+					{
+						"name": "patient_gender",
+						"type": "UTF8"
+					},
+					{
+						"name": "general_health",
+						"type": "UTF8"
+					},
+					{
+						"name": "physical_health_days",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "mental_health_days",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "last_checkup_time",
+						"type": "UTF8"
+					},
+					{
+						"name": "physical_activities",
+						"type": "UTF8"
+					},
+					{
+						"name": "sleep_hours",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "had_heart_attack",
+						"type": "UTF8"
+					},
+					{
+						"name": "had_angina",
+						"type": "UTF8"
+					},
+					{
+						"name": "had_stroke",
+						"type": "UTF8"
+					},
+					{
+						"name": "had_asthma",
+						"type": "UTF8"
+					},
+					{
+						"name": "had_skin_cancer",
+						"type": "UTF8"
+					},
+					{
+						"name": "had_copd",
+						"type": "UTF8"
+					},
+					{
+						"name": "had_depressive_disorder",
+						"type": "UTF8"
+					},
+					{
+						"name": "had_kidney_disease",
+						"type": "UTF8"
+					},
+					{
+						"name": "had_arthritis",
+						"type": "UTF8"
+					},
+					{
+						"name": "had_diabetes",
+						"type": "UTF8"
+					},
+					{
+						"name": "deaf_or_hard_of_hearing",
+						"type": "UTF8"
+					},
+					{
+						"name": "blind_or_vision_difficulty",
+						"type": "UTF8"
+					},
+					{
+						"name": "difficulty_concentrating",
+						"type": "UTF8"
+					},
+					{
+						"name": "difficulty_walking",
+						"type": "UTF8"
+					},
+					{
+						"name": "difficulty_dressing_bathing",
+						"type": "UTF8"
+					},
+					{
+						"name": "difficulty_errands",
+						"type": "UTF8"
+					},
+					{
+						"name": "smoker_status",
+						"type": "UTF8"
+					},
+					{
+						"name": "ecigarette_usage",
+						"type": "UTF8"
+					},
+					{
+						"name": "chest_scan",
+						"type": "UTF8"
+					},
+					{
+						"name": "race_ethnicity_category",
+						"type": "UTF8"
+					},
+					{
+						"name": "age_category",
+						"type": "UTF8"
+					},
+					{
+						"name": "height_in_meters",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "weight_in_kilograms",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "bmi",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "alcohol_drinkers",
+						"type": "UTF8"
+					},
+					{
+						"name": "hiv_testing",
+						"type": "UTF8"
+					},
+					{
+						"name": "flu_vax_last_12",
+						"type": "UTF8"
+					},
+					{
+						"name": "pneumo_vax_ever",
+						"type": "UTF8"
+					},
+					{
+						"name": "tetanus_last_10_tdap",
+						"type": "UTF8"
+					},
+					{
+						"name": "high_risk_last_year",
+						"type": "UTF8"
+					},
+					{
+						"name": "covid_pos",
+						"type": "UTF8"
+					},
+					{
+						"name": "ingested_data",
+						"type": "INT96"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_adls_output')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_synapse_output')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_synapse",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "patient_state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "patient_sex",
+						"type": "nvarchar"
+					},
+					{
+						"name": "general_health",
+						"type": "nvarchar"
+					},
+					{
+						"name": "physical_health_days",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "mental_health_days",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "last_checkup_time",
+						"type": "nvarchar"
+					},
+					{
+						"name": "physical_activities",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sleep_hours",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "had_heart_attack",
+						"type": "nvarchar"
+					},
+					{
+						"name": "had_angina",
+						"type": "nvarchar"
+					},
+					{
+						"name": "had_stroke",
+						"type": "nvarchar"
+					},
+					{
+						"name": "had_asthma",
+						"type": "nvarchar"
+					},
+					{
+						"name": "had_skin_cancer",
+						"type": "nvarchar"
+					},
+					{
+						"name": "had_copd",
+						"type": "nvarchar"
+					},
+					{
+						"name": "had_depressive_disorder",
+						"type": "nvarchar"
+					},
+					{
+						"name": "had_kidney_disease",
+						"type": "nvarchar"
+					},
+					{
+						"name": "had_arthritis",
+						"type": "nvarchar"
+					},
+					{
+						"name": "had_diabetes",
+						"type": "nvarchar"
+					},
+					{
+						"name": "deaf_or_hard_of_hearing",
+						"type": "nvarchar"
+					},
+					{
+						"name": "blind_or_vision_difficulty",
+						"type": "nvarchar"
+					},
+					{
+						"name": "difficulty_concentrating",
+						"type": "nvarchar"
+					},
+					{
+						"name": "difficulty_walking",
+						"type": "nvarchar"
+					},
+					{
+						"name": "difficulty_dressing_bathing",
+						"type": "nvarchar"
+					},
+					{
+						"name": "difficulty_errands",
+						"type": "nvarchar"
+					},
+					{
+						"name": "smoker_status",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ecigarette_usage",
+						"type": "nvarchar"
+					},
+					{
+						"name": "chest_scan",
+						"type": "nvarchar"
+					},
+					{
+						"name": "race_ethnicity_category",
+						"type": "nvarchar"
+					},
+					{
+						"name": "age_category",
+						"type": "nvarchar"
+					},
+					{
+						"name": "height_in_meters",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "weight_in_kilograms",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "bmi",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "alcohol_drinkers",
+						"type": "nvarchar"
+					},
+					{
+						"name": "hiv_testing",
+						"type": "nvarchar"
+					},
+					{
+						"name": "flu_vax_last_12",
+						"type": "nvarchar"
+					},
+					{
+						"name": "pneumo_vax_ever",
+						"type": "nvarchar"
+					},
+					{
+						"name": "tetanus_last_10_tdap",
+						"type": "nvarchar"
+					},
+					{
+						"name": "high_risk_last_year",
+						"type": "nvarchar"
+					},
+					{
+						"name": "covid_pos",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "heart_disease_data_internal"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_synapse')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/health-synapse-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('health-synapse-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/health-synapse-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('health-synapse-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_fetch_data')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_fetch_data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "FlattenHierarchy"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_http_input",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_storage_output",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-05-31T22:42:33Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_http_input')]",
+				"[concat(variables('factoryId'), '/datasets/ds_storage_output')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_copy_to_synapse')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "exec_fetch_data",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pl_fetch_data",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "exec_data_cleaning",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "exec_fetch_data",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pl_data_cleaning",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "copy_to_synapse",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "exec_data_cleaning",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ParquetSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "processed/cancer",
+									"wildcardFileName": "*.parquet",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "ParquetReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlDWSink",
+								"writeBehavior": "Insert",
+								"sqlWriterUseTableLock": true,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_synapse_input",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_synapse_output",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-06-01T22:05:24Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_fetch_data')]",
+				"[concat(variables('factoryId'), '/pipelines/pl_data_cleaning')]",
+				"[concat(variables('factoryId'), '/datasets/ds_synapse_input')]",
+				"[concat(variables('factoryId'), '/datasets/ds_synapse_output')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_pipeline_runs')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "exec_pl_fetch_data",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pl_fetch_data",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "exec_pl_clean_data",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "exec_pl_fetch_data",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pl_data_cleaning",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "exec_pl_transform_data",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "exec_pl_clean_data",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pl_data_transformation",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-05-31T23:45:35Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_fetch_data')]",
+				"[concat(variables('factoryId'), '/pipelines/pl_data_cleaning')]",
+				"[concat(variables('factoryId'), '/pipelines/pl_data_transformation')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/schedule_trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_pipeline_runs",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 15,
+						"startTime": "2024-06-07T05:56:00",
+						"timeZone": "Eastern Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_pipeline_runs')]"
+			]
+		}
+	]
+}
